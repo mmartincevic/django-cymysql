@@ -14,6 +14,7 @@ import cymysql as Database
 from cymysql.converters import decoders, escape_string
 from cymysql.constants import FIELD_TYPE, CLIENT
 
+import django
 from django.utils.functional import cached_property
 
 
@@ -69,7 +70,10 @@ def adapt_datetime_with_timezone_support(value,  charset=None, field=None, use_u
 def typecast_time(v):
     if isinstance(v, bytes):
         v = v.decode('ascii')
-    return utils.typecast_time(v)
+    if django.VERSION >= (1, 7):
+        return utils.typecast_time(v)
+    else:
+        return util.typecast_time(v)
 django_conversions = decoders.copy()
 django_conversions.update({
     FIELD_TYPE.TIME: typecast_time,
